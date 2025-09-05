@@ -4,9 +4,9 @@ const loadLessons = () => {
         .then((json) => displayLesson(json.data));
 };
 
-const removeActive=()=>{
-    const lessonButtons=document.querySelectorAll(".lesson-btn");
-    lessonButtons.forEach(btn=>btn.classList.remove("active"));
+const removeActive = () => {
+    const lessonButtons = document.querySelectorAll(".lesson-btn");
+    lessonButtons.forEach(btn => btn.classList.remove("active"));
 }
 
 // display word function
@@ -16,12 +16,63 @@ const loadLevelWord = (id) => {
         .then(res => res.json())
         .then(data => {
             removeActive(); // remove all active class
-            const clickBtn=document.getElementById(`lesson-btn-${id}`);
+            const clickBtn = document.getElementById(`lesson-btn-${id}`);
             // console.log('clicked btn')
             clickBtn.classList.add("active");   // add active class
             displayLevelWord(data.data);
         })
 };
+
+//  "word": "Eager",
+//     "meaning": "আগ্রহী",
+//     "pronunciation": "ইগার",
+//     "level": 1,
+//     "sentence": "The kids were eager to open their gifts.",
+//     "points": 1,
+//     "partsOfSpeech": "adjective",
+//     "synonyms": [
+//       "enthusiastic",
+//       "excited",
+//       "keen"
+//     ],
+//     "id": 5
+
+const loadWordDetail = async (id) => {
+    const url = `https://openapi.programming-hero.com/api/word/${id}`;
+    const res = await fetch(url);
+    const details = await res.json();
+    displayWordDetails(details.data)
+};
+
+const displayWordDetails = (word) => {
+    console.log(word)
+    const detailsBox = document.getElementById("details-container");
+    detailsBox.innerHTML = `
+    <div class="">
+        <h2 class="text-2xl font-bold">${word.word ? word.word : "শব্দ পাওয়া যায় নি"} (<i class="fa-solid fa-microphone-lines"></i> : <span
+        class="font-bangla">${word.pronunciation ? word.pronunciation : "Pronunciation পাওয়া যায় নি"}</span> )</h2>
+    </div>
+
+    <div class="">
+        <h2 class="font-bold">Meaning</h2>
+        <p class="font-bangla">${word.meaning ? word.meaning : "অর্থ পাওয়া যায় নি"}</p>
+    </div>
+
+    <div class="">
+        <h2 class="font-bold">Example</h2>
+        <p class="">${word.sentence ? word.sentence : "Sentence পাওয়া যায় নি"}</p>
+    </div>
+
+    <div class="">
+        <h2 class="font-bold font-bangla">সমার্থক শব্দ গুলো</h2>
+        <span class="btn">${word.synonyms[0] ? word.synonyms[0] : "Synonyms পাওয়া যায় নি"}</span>
+        <span class="btn">${word.synonyms[1] ? word.synonyms[1] : "Synonyms পাওয়া যায় নি"}</span>
+        <span class="btn">${word.synonyms[2] ? word.synonyms[2] : "Synonyms পাওয়া যায় নি"}</span>
+    </div>
+    `
+        ;
+    document.getElementById("word_modal").showModal();
+}
 
 const displayLevelWord = (words) => {
     const wordContainer = document.getElementById("word-container");
@@ -50,13 +101,13 @@ const displayLevelWord = (words) => {
         const card = document.createElement("div");
         card.innerHTML = `
         <div class="bg-white rounded-xl shadow-sm space-y-4 py-10 px-5 text-center">
-            <h2 class="font-bold text-2xl">${word.word? word.word:"শব্দ পাওয়া যায় নি"}</h2>
+            <h2 class="font-bold text-2xl">${word.word ? word.word : "শব্দ পাওয়া যায় নি"}</h2>
             <p class="font-semibold text-xl">Meaning /Pronounciation</p>
 
-            <div class="font-medium text-2xl font-bangla">"${word.meaning? word.meaning : "অর্থ পাওয়া যায় নি"} / ${word.pronunciation? word.pronunciation:"Pronounciation পাওয়া যায় নি"}"</div>
+            <div class="font-medium text-2xl font-bangla">"${word.meaning ? word.meaning : "অর্থ পাওয়া যায় নি"} / ${word.pronunciation ? word.pronunciation : "Pronounciation পাওয়া যায় নি"}"</div>
 
             <div class="flex justify-between items-center">
-                <button onclick="my_modal_5.showModal()" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
+                <button onclick="loadWordDetail(${word.id})" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
                 <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
